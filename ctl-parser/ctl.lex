@@ -17,6 +17,8 @@ int yyerror(char *s);
 }
 %}
 
+boolean		true|TRUE|false|FALSE
+
 atom		[a-z]
 
 negation	NOT|not
@@ -24,6 +26,7 @@ and			AND|and
 
 exists_next		EX
 exists_globally	EG
+always_globally	AG
 exists			E
 until			U
 
@@ -32,8 +35,10 @@ closing_parenthesis		\)
 
 %%
 
+{boolean}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return BOOLEAN_LITERAL; }
 {exists_next}			{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS_NEXT; }
 {exists_globally}		{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS_GLOBALLY; }
+{always_globally}		{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ALWAYS_GLOBALLY; }
 {exists}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS; }
 {until}					{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return UNTIL; }
 {negation}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return NOT; }

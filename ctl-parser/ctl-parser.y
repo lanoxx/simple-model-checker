@@ -31,12 +31,15 @@ int yylex(void);
 %token	<atom_name>		ATOMIC_PROPOSITION
 %token	<formula>		EXISTS_NEXT
 %token	<formula>		EXISTS_GLOBALLY
+%token	<formula>		ALWAYS_GLOBALLY
 %token	<formula>		EXISTS
 %token	<formula>		UNTIL
 %token	<formula>		NOT
+%token	<atom_name>		BOOLEAN_LITERAL
 
 %type	<formula>		stmt
 %type	<formula>		atom
+%type	<formula>		boolean
 
 %left   <formula>		AND
 %nonassoc '('
@@ -46,17 +49,17 @@ int yylex(void);
 
 input:  %empty
 		| stmt                             {
-		                                     //printf("input is stmt\n");
 		                                     root_formula = $1; YYACCEPT;
 		                                   }
 		;
 
 stmt:   atom                               {
-		                                     //printf("statement is atom\n");
+		                                     $$ = $1;
+		                                   }
+		| boolean                          {
 		                                     $$ = $1;
 		                                   }
 		| NOT atom                         {
-		                                     //printf("statement is negated statement\n");
 		                                     Formula *stmt_formula = formula_new();
 		                                     stmt_formula->type = CTL_TYPE_NEGATION;
 		                                     stmt_formula->subformulas = g_list_append (NULL, $2);
@@ -64,7 +67,6 @@ stmt:   atom                               {
 		                                     $$ = stmt_formula;
 		                                   }
 		| EXISTS_NEXT '(' stmt ')'         {
-		                                     //printf("statement is EX\n");
 		                                     Formula *stmt_formula = formula_new();
 		                                     stmt_formula->type = CTL_TYPE_EXIST_NEXT;
 		                                     stmt_formula->subformulas = g_list_append (NULL, $3);
@@ -72,15 +74,41 @@ stmt:   atom                               {
 		                                     $$ = stmt_formula;
 		                                   }
 		| EXISTS_GLOBALLY '(' stmt ')'     {
-		                                     //printf("statement is EG\n");
 		                                     Formula *stmt_formula = formula_new();
 		                                     stmt_formula->type = CTL_TYPE_EXISTS_GLOBALLY;
 		                                     stmt_formula->subformulas = g_list_append (NULL, $3);
 		                                     stmt_formula->name = strdup("EG");
 		                                     $$ = stmt_formula;
 		                                   }
+		| ALWAYS_GLOBALLY '(' stmt ')'     {
+		                                     // not E (true U (not stmt))
+		                                     Formula *not_stmt_formula = formula_new();
+		                                     not_stmt_formula->type = CTL_TYPE_NEGATION;
+		                                     not_stmt_formula->subformulas = g_list_append (NULL, $3);
+		                                     not_stmt_formula->name = strdup("negation");
+
+		                                     Formula *true_formula = formula_new();
+		                                     true_formula->type = CTL_TYPE_BOOLEAN_LITERAL;
+		                                     true_formula->subformulas = NULL;
+		                                     true_formula->name = strdup("true");
+		                                     true_formula->value = 1;
+
+		                                     Formula *until_formula = formula_new();
+		                                     until_formula->type = CTL_TYPE_EXIST_UNTIL;
+		                                     GList *subformulas;
+		                                     subformulas = g_list_append (NULL, true_formula);
+		                                     subformulas = g_list_append (subformulas, not_stmt_formula);
+		                                     until_formula->subformulas = subformulas;
+		                                     until_formula->name = strdup("EU");
+
+		                                     Formula *not_exists_formula = formula_new();
+		                                     not_exists_formula->type = CTL_TYPE_NEGATION;
+		                                     not_exists_formula->subformulas = g_list_append (NULL, until_formula);
+		                                     not_exists_formula->name = strdup("negation");
+
+		                                     $$ = not_exists_formula;
+		                                   }
 		| EXISTS stmt UNTIL stmt           {
-		                                     //printf("statement is E U\n");
 		                                     Formula *stmt_formula = formula_new();
 		                                     stmt_formula->type = CTL_TYPE_EXIST_UNTIL;
 		                                     GList *subformulas;
@@ -91,7 +119,6 @@ stmt:   atom                               {
 		                                     $$ = stmt_formula;
 		                                   }
 		| stmt AND stmt                    {
-		                                     //printf("statement is conjunction\n");
 		                                     Formula *stmt_formula = formula_new();
 		                                     stmt_formula->type = CTL_TYPE_CONJUNCTION;
 		                                     GList *subformulas;
@@ -104,12 +131,27 @@ stmt:   atom                               {
 		;
 
 atom:	ATOMIC_PROPOSITION                 {
-		                                     //printf("parsed atom\n");
 		                                     Formula *stmt_formula = formula_new();
 		                                     stmt_formula->type = CTL_TYPE_ATOMIC_PROPOSITION;
 		                                     stmt_formula->name = strdup($1);
 		                                     $$ = stmt_formula;
 		                                   }
+
+boolean: BOOLEAN_LITERAL                   {
+		                                     Formula *stmt_formula = formula_new();
+		                                     stmt_formula->type = CTL_TYPE_BOOLEAN_LITERAL;
+		                                     gboolean value;
+
+		                                     if (g_strcmp0($1, "true") == 0) {
+		                                       value = TRUE;
+		                                     } else {
+		                                       value = FALSE;
+		                                     }
+
+		                                     stmt_formula->value = value;
+		                                     $$ = stmt_formula;
+		                                   }
+		;
 
 %%
 

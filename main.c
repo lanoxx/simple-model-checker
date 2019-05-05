@@ -228,6 +228,16 @@ int main ()
   GList *parsed_result_states_not_b = modelCheck (&kripke, formula_not_b_parsed);
   print_states (parsed_result_states_not_b);
 
+  printf("\n");
+
+  printf("[CTL-PARSER] Result states 'AG(b)'\n");
+
+  Formula *formula_ag_b_parsed = parse_ctl_formula ("AG(b)", 0);
+  GList *parsed_result_states_ag_b = modelCheck (&kripke, formula_ag_b_parsed);
+  print_states (parsed_result_states_ag_b);
+
+  printf("\n");
+
   return EXIT_SUCCESS;
 }
 
