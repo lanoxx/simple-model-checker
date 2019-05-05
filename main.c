@@ -4,6 +4,10 @@
 
 #include <glib.h>
 
+#include "formula.h"
+
+#include <parser.h>
+
 typedef struct state
 {
   char *name;
@@ -18,27 +22,8 @@ typedef struct relation
 typedef struct label
 {
   State *state;
-  char atom;
+  char* atom;
 } Label;
-
-enum TOKENS
-{
-  TOKEN_NONE,
-  TOKEN_BOOLEAN_LITERAL,
-  TOKEN_ATOMIC_PROPOSITION,
-  TOKEN_NEGATION,
-  TOKEN_CONJUNCTION,
-  TOKEN_EXIST_NEXT,
-  TOKEN_EXIST_UNTIL,
-  TOKEN_EXISTS_GLOBALLY
-};
-
-typedef struct formula
-{
-  GList *subformulas; /* GList<Formula> subformulas */
-  enum TOKENS type;
-  long value;
-} Formula;
 
 typedef struct kripkeStructure
 {
@@ -89,41 +74,41 @@ int main ()
 
   Formula formula_EX;
   Formula formula_b, formula_a;
-  formula_EX.type = TOKEN_EXIST_NEXT;
+  formula_EX.type = CTL_TYPE_EXIST_NEXT;
   formula_EX.subformulas = g_list_append (NULL, &formula_b);
 
-  formula_a.type = TOKEN_ATOMIC_PROPOSITION;
+  formula_a.type = CTL_TYPE_ATOMIC_PROPOSITION;
   formula_a.subformulas = NULL;
-  formula_a.value = 'a';
+  formula_a.name = strdup ("a");
 
-  formula_b.type = TOKEN_ATOMIC_PROPOSITION;
+  formula_b.type = CTL_TYPE_ATOMIC_PROPOSITION;
   formula_b.subformulas = NULL;
-  formula_b.value = 'b';
+  formula_b.name = strdup ("b");
 
   Formula formula_EG;
-  formula_EG.type = TOKEN_EXISTS_GLOBALLY;
+  formula_EG.type = CTL_TYPE_EXISTS_GLOBALLY;
   formula_EG.subformulas = g_list_append (NULL, &formula_b);
 
   Formula formula_a_U_b;
-  formula_a_U_b.type = TOKEN_EXIST_UNTIL;
+  formula_a_U_b.type = CTL_TYPE_EXIST_UNTIL;
   formula_a_U_b.subformulas = g_list_append(g_list_append (NULL, &formula_a), &formula_b);
 
   Formula formula_b_U_a;
-  formula_b_U_a.type = TOKEN_EXIST_UNTIL;
+  formula_b_U_a.type = CTL_TYPE_EXIST_UNTIL;
   formula_b_U_a.subformulas = g_list_append(g_list_append (NULL, &formula_b), &formula_a);
 
   Formula formula_not_b;
-  formula_not_b.type = TOKEN_NEGATION;
+  formula_not_b.type = CTL_TYPE_NEGATION;
   formula_not_b.subformulas = g_list_append(NULL, &formula_b);
 
   // AF_b:
   Formula formula_EG_not_b;
 
   Formula formula_not_EG_not_b;
-  formula_not_EG_not_b.type = TOKEN_NEGATION;
+  formula_not_EG_not_b.type = CTL_TYPE_NEGATION;
   formula_not_EG_not_b.subformulas = g_list_append (NULL, &formula_EG_not_b);
 
-  formula_EG_not_b.type = TOKEN_EXISTS_GLOBALLY;
+  formula_EG_not_b.type = CTL_TYPE_EXISTS_GLOBALLY;
   formula_EG_not_b.subformulas = g_list_append (NULL, &formula_not_b);
 
   GList *states = NULL;
@@ -141,22 +126,22 @@ int main ()
   GList *labels = NULL;
 
   label_s0_a.state = &state_0;
-  label_s0_a.atom = 'a';
+  label_s0_a.atom = strdup ("a");
 
   label_s0_b.state = &state_0;
-  label_s0_b.atom = 'b';
+  label_s0_b.atom = strdup("b");
 
   label_s1_a.state = &state_1;
-  label_s1_a.atom = 'a';
+  label_s1_a.atom = strdup("a");
 
   label_s2_b.state = &state_2;
-  label_s2_b.atom = 'b';
+  label_s2_b.atom = strdup("b");
 
   label_s3_a.state = &state_3;
-  label_s3_a.atom = 'a';
+  label_s3_a.atom = strdup("a");
 
   label_s3_b.state = &state_3;
-  label_s3_b.atom = 'b';
+  label_s3_b.atom = strdup("b");
 
   labels = g_list_append (labels, &label_s0_a);
   labels = g_list_append (labels, &label_s0_b);
@@ -235,6 +220,14 @@ int main ()
   GList *result_states_AF_b = modelCheck (&kripke, &formula_not_EG_not_b);
   print_states (result_states_AF_b);
 
+  printf ("\n");
+
+  printf ("[CTL-PARSER] Result states 'not b'\n");
+
+  Formula *formula_not_b_parsed = parse_ctl_formula ("not b", 0);
+  GList *parsed_result_states_not_b = modelCheck (&kripke, formula_not_b_parsed);
+  print_states (parsed_result_states_not_b);
+
   return EXIT_SUCCESS;
 }
 
@@ -253,7 +246,7 @@ getStatesBooleanLiteral (KripkeStructure *kripke, Formula *formula)
 GList *
 getStatesWithAtomicProposition (KripkeStructure *kripke, Formula *formula)
 {
-  char atom = formula->value;
+  char *atom = formula->name;
 
   GList *current_state_item = kripke->states;
 
@@ -271,8 +264,10 @@ getStatesWithAtomicProposition (KripkeStructure *kripke, Formula *formula)
 
       Label *current_label = current_label_item->data;
 
+      gboolean atom_names_equal = g_strcmp0 (current_label->atom,atom) == 0;
+
       if (current_label->state == current_state_item->data &&
-          current_label->atom == atom)
+          atom_names_equal)
       {
         result_states = g_list_append (result_states, current_state);
         break;
@@ -542,40 +537,40 @@ GList *modelCheck (KripkeStructure *kripkeStructure, Formula *formula)
 {
   switch (formula->type)
   {
-    case TOKEN_NONE:
+    case CTL_TYPE_NONE:
       printf ("invalid formula");
       return NULL;
-    case TOKEN_BOOLEAN_LITERAL:
+    case CTL_TYPE_BOOLEAN_LITERAL:
     {
       GList *states = getStatesBooleanLiteral (kripkeStructure, formula);
       return states;
     }
-    case TOKEN_ATOMIC_PROPOSITION:
+    case CTL_TYPE_ATOMIC_PROPOSITION:
     {
       GList *states = getStatesWithAtomicProposition (kripkeStructure, formula);
       return states;
     }
-    case TOKEN_NEGATION:
+    case CTL_TYPE_NEGATION:
     {
       GList *states = getStatesWithNegation (kripkeStructure, formula);
       return states;
     }
-    case TOKEN_CONJUNCTION:
+    case CTL_TYPE_CONJUNCTION:
     {
       GList *states = getStatesWithConjunction (kripkeStructure, formula);
       return states;
     }
-    case TOKEN_EXIST_NEXT:
+    case CTL_TYPE_EXIST_NEXT:
     {
       GList *states = getStatesExistsNext (kripkeStructure, formula);
       return states;
     }
-    case TOKEN_EXIST_UNTIL:
+    case CTL_TYPE_EXIST_UNTIL:
     {
       GList *states = getStatesExistsUntil (kripkeStructure, formula);
       return states;
     }
-    case TOKEN_EXISTS_GLOBALLY:
+    case CTL_TYPE_EXISTS_GLOBALLY:
     {
       GList *states = getStatesExistsGlobally (kripkeStructure, formula);
       return states;
