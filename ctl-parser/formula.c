@@ -2,14 +2,60 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 Formula *
 formula_new ()
 {
   Formula *formula = malloc(sizeof(Formula));
+  formula->type = CTL_TYPE_NONE;
   formula->subformulas = NULL;
   formula->name = NULL;
   formula->value = 0;
+
+  return formula;
+}
+
+Formula *
+formula_new_composite (enum FormulaType type, char* name, ...)
+{
+  va_list args;
+  va_start(args, name);
+
+  Formula *formula = formula_new();
+  formula->type = type;
+  formula->name = strdup(name);
+
+  Formula *subformula;
+  GList *subformulas = NULL;
+
+  while ((subformula = va_arg (args, Formula*)) != NULL) {
+    subformulas = g_list_append (subformulas, subformula);
+  }
+
+  formula->subformulas = subformulas;
+
+  va_end (args);
+
+  return formula;
+}
+
+Formula *
+formula_new_value (enum FormulaType type, long value)
+{
+  Formula *formula = formula_new();
+  formula->type = type;
+  formula->value = value;
+
+  return formula;
+}
+
+Formula *
+formula_new_name (enum FormulaType type, char* name)
+{
+  Formula *formula = formula_new();
+  formula->type = type;
+  formula->name = name;
 
   return formula;
 }

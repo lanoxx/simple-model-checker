@@ -29,6 +29,12 @@ void      formula_print_structure (Formula *formula);
 
 Formula * formula_new ();
 
+Formula * formula_new_composite (enum FormulaType type, char* name, ...);
+
+Formula * formula_new_value (enum FormulaType type, long value);
+
+Formula * formula_new_name (enum FormulaType type, char* name);
+
 void      formula_free (Formula *formula);
 
 #endif /* FORMULA_H */

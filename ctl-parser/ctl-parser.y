@@ -60,86 +60,53 @@ stmt:   atom                               {
 		                                     $$ = $1;
 		                                   }
 		| NOT atom                         {
-		                                     Formula *stmt_formula = formula_new();
-		                                     stmt_formula->type = CTL_TYPE_NEGATION;
-		                                     stmt_formula->subformulas = g_list_append (NULL, $2);
-		                                     stmt_formula->name = strdup("negation");
+		                                     Formula *stmt_formula =
+		                                       formula_new_composite (CTL_TYPE_NEGATION, "negation", $2, NULL);
+
 		                                     $$ = stmt_formula;
 		                                   }
 		| EXISTS_NEXT '(' stmt ')'         {
-		                                     Formula *stmt_formula = formula_new();
-		                                     stmt_formula->type = CTL_TYPE_EXIST_NEXT;
-		                                     stmt_formula->subformulas = g_list_append (NULL, $3);
-		                                     stmt_formula->name = strdup("EX");
+		                                     Formula *stmt_formula =
+		                                       formula_new_composite (CTL_TYPE_EXIST_NEXT, "EX", $3, NULL);
+
 		                                     $$ = stmt_formula;
 		                                   }
 		| EXISTS_GLOBALLY '(' stmt ')'     {
-		                                     Formula *stmt_formula = formula_new();
-		                                     stmt_formula->type = CTL_TYPE_EXISTS_GLOBALLY;
-		                                     stmt_formula->subformulas = g_list_append (NULL, $3);
-		                                     stmt_formula->name = strdup("EG");
+		                                     Formula *stmt_formula =
+		                                      formula_new_composite (CTL_TYPE_EXISTS_GLOBALLY, "EG", $3, NULL);
+
 		                                     $$ = stmt_formula;
 		                                   }
 		| ALWAYS_GLOBALLY '(' stmt ')'     {
-		                                     // not E (true U (not stmt))
-		                                     Formula *not_stmt_formula = formula_new();
-		                                     not_stmt_formula->type = CTL_TYPE_NEGATION;
-		                                     not_stmt_formula->subformulas = g_list_append (NULL, $3);
-		                                     not_stmt_formula->name = strdup("negation");
+		                                     // AG == not E (true U (not stmt))
 
-		                                     Formula *true_formula = formula_new();
-		                                     true_formula->type = CTL_TYPE_BOOLEAN_LITERAL;
-		                                     true_formula->subformulas = NULL;
-		                                     true_formula->name = strdup("true");
-		                                     true_formula->value = 1;
+		                                     Formula *not_stmt_formula =
+		                                       formula_new_composite (CTL_TYPE_NEGATION, "negation", $3, NULL);
 
-		                                     Formula *until_formula = formula_new();
-		                                     until_formula->type = CTL_TYPE_EXIST_UNTIL;
-		                                     GList *subformulas;
-		                                     subformulas = g_list_append (NULL, true_formula);
-		                                     subformulas = g_list_append (subformulas, not_stmt_formula);
-		                                     until_formula->subformulas = subformulas;
-		                                     until_formula->name = strdup("EU");
+		                                     Formula *true_formula =
+		                                       formula_new_value (CTL_TYPE_BOOLEAN_LITERAL, TRUE);
 
-		                                     Formula *not_exists_formula = formula_new();
-		                                     not_exists_formula->type = CTL_TYPE_NEGATION;
-		                                     not_exists_formula->subformulas = g_list_append (NULL, until_formula);
-		                                     not_exists_formula->name = strdup("negation");
+		                                     Formula *until_formula =
+		                                       formula_new_composite (CTL_TYPE_EXIST_UNTIL, "EU", true_formula, not_stmt_formula, NULL);
+
+		                                     Formula *not_exists_formula =
+		                                      formula_new_composite (CTL_TYPE_NEGATION, "negation", until_formula, NULL);
 
 		                                     $$ = not_exists_formula;
 		                                   }
 		| EXISTS stmt UNTIL stmt           {
-		                                     Formula *stmt_formula = formula_new();
-		                                     stmt_formula->type = CTL_TYPE_EXIST_UNTIL;
-		                                     GList *subformulas;
-		                                     subformulas = g_list_append (NULL, $2);
-		                                     subformulas = g_list_append (subformulas, $4);
-		                                     stmt_formula->subformulas = subformulas;
-		                                     stmt_formula->name = strdup("EU");
-		                                     $$ = stmt_formula;
+		                                     $$ = formula_new_composite (CTL_TYPE_EXIST_UNTIL, "EU", $2, $4, NULL);
 		                                   }
 		| stmt AND stmt                    {
-		                                     Formula *stmt_formula = formula_new();
-		                                     stmt_formula->type = CTL_TYPE_CONJUNCTION;
-		                                     GList *subformulas;
-                                             subformulas = g_list_append (NULL, $1);
-                                             subformulas = g_list_append (subformulas, $3);
-		                                     stmt_formula->subformulas = subformulas;
-		                                     stmt_formula->name = strdup("and");
-		                                     $$ = stmt_formula;
+		                                     $$ = formula_new_composite(CTL_TYPE_CONJUNCTION, "and", $1, $3, NULL);
 		                                   }
 		;
 
 atom:	ATOMIC_PROPOSITION                 {
-		                                     Formula *stmt_formula = formula_new();
-		                                     stmt_formula->type = CTL_TYPE_ATOMIC_PROPOSITION;
-		                                     stmt_formula->name = strdup($1);
-		                                     $$ = stmt_formula;
+		                                     $$ = formula_new_name (CTL_TYPE_ATOMIC_PROPOSITION, $1);
 		                                   }
 
 boolean: BOOLEAN_LITERAL                   {
-		                                     Formula *stmt_formula = formula_new();
-		                                     stmt_formula->type = CTL_TYPE_BOOLEAN_LITERAL;
 		                                     gboolean value;
 
 		                                     if (g_strcmp0($1, "true") == 0) {
@@ -148,8 +115,7 @@ boolean: BOOLEAN_LITERAL                   {
 		                                       value = FALSE;
 		                                     }
 
-		                                     stmt_formula->value = value;
-		                                     $$ = stmt_formula;
+		                                     $$ = formula_new_value (CTL_TYPE_BOOLEAN_LITERAL, value);
 		                                   }
 		;
 
