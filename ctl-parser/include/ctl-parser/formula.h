@@ -19,10 +19,8 @@ enum FormulaType
 typedef struct formula {
   GList *subformulas;
   enum FormulaType type;
-  union {
-    char *name;
-    long value;
-  };
+  char *name;
+  long value;
 } Formula;
 
 void      formula_print_structure (Formula *formula);

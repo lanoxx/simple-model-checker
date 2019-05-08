@@ -1,4 +1,4 @@
-#include "formula.h"
+#include <ctl-parser/formula.h>
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -2,7 +2,7 @@
 /* calc.y */
 
 %{
-#include <heading.h>
+#include <ctl-parser/heading.h>
 #include <glib.h>
 
 /**
@@ -32,6 +32,7 @@ int yylex(void);
 %token	<formula>		EXISTS_NEXT
 %token	<formula>		EXISTS_GLOBALLY
 %token	<formula>		ALWAYS_GLOBALLY
+%token	<formula>		ALWAYS_FUTURE
 %token	<formula>		EXISTS
 %token	<formula>		UNTIL
 %token	<formula>		NOT
@@ -93,6 +94,20 @@ stmt:   atom                               {
 		                                      formula_new_composite (CTL_TYPE_NEGATION, "negation", until_formula, NULL);
 
 		                                     $$ = not_exists_formula;
+		                                   }
+		| ALWAYS_FUTURE '(' stmt ')'       {
+		                                     // AF == not EG (not stmt)
+
+		                                     Formula *not_stmt_formula =
+		                                       formula_new_composite (CTL_TYPE_NEGATION, "negation", $3, NULL);
+
+		                                     Formula *eg_formula =
+		                                       formula_new_composite (CTL_TYPE_EXISTS_GLOBALLY, "EG", not_stmt_formula, NULL);
+
+		                                     Formula *not_eg_formula =
+		                                      formula_new_composite (CTL_TYPE_NEGATION, "negation", eg_formula, NULL);
+
+		                                     $$ = not_eg_formula;
 		                                   }
 		| EXISTS stmt UNTIL stmt           {
 		                                     $$ = formula_new_composite (CTL_TYPE_EXIST_UNTIL, "EU", $2, $4, NULL);

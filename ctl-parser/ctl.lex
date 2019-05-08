@@ -2,7 +2,7 @@
 /* calc.lex */
 
 %{
-#include "heading.h"
+#include <ctl-parser/heading.h>
 #include <bison.h>
 int yyerror(char *s);
 
@@ -27,6 +27,7 @@ and			AND|and
 exists_next		EX
 exists_globally	EG
 always_globally	AG
+always_future	AF
 exists			E
 until			U
 
@@ -39,6 +40,7 @@ closing_parenthesis		\)
 {exists_next}			{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS_NEXT; }
 {exists_globally}		{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS_GLOBALLY; }
 {always_globally}		{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ALWAYS_GLOBALLY; }
+{always_future}			{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ALWAYS_FUTURE; }
 {exists}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS; }
 {until}					{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return UNTIL; }
 {negation}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return NOT; }

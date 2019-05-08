@@ -1,6 +1,6 @@
-#include "parser.h"
+#include <ctl-parser/parser.h>
 
-#include "heading.h"
+#include <ctl-parser/heading.h>
 
 #include <bison.h>
 

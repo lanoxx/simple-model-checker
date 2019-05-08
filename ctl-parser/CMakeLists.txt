@@ -13,9 +13,12 @@ add_library(ctl-parser "")
 target_sources(ctl-parser PRIVATE
         parser.c
         formula.c
-        heading.h
         ${BISON_parser_OUTPUTS}
         ${FLEX_lexer_OUTPUTS})
 
-target_include_directories(ctl-parser PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${GLIB_INCLUDE_DIRS})
+target_include_directories(ctl-parser PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${GLIB_INCLUDE_DIRS}
+        PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        )
 target_link_libraries(ctl-parser ${GLIB_LIBRARIES} fl)
