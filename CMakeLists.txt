@@ -6,6 +6,8 @@ set(CMAKE_C_STANDARD 11)
 find_package(PkgConfig)
 find_package(BISON)
 
+enable_testing()
+
 pkg_check_modules (GLIB REQUIRED glib-2.0)
 
 add_subdirectory(ctl-parser)

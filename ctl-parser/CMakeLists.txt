@@ -21,4 +21,7 @@ target_include_directories(ctl-parser PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAK
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
+
 target_link_libraries(ctl-parser ${GLIB_LIBRARIES} fl)
+
+add_subdirectory(test)
