@@ -31,8 +31,11 @@ int yylex(void);
 %token	<atom_name>		ATOMIC_PROPOSITION
 %token	<formula>		EXISTS_NEXT
 %token	<formula>		EXISTS_GLOBALLY
+%token	<formula>		EXISTS_FUTURE
 %token	<formula>		ALWAYS_GLOBALLY
 %token	<formula>		ALWAYS_FUTURE
+%token	<formula>		ALWAYS_NEXT
+%token	<formula>		ALWAYS
 %token	<formula>		EXISTS
 %token	<formula>		UNTIL
 %token	<formula>		NOT
@@ -78,6 +81,29 @@ stmt:   atom                               {
 
 		                                     $$ = stmt_formula;
 		                                   }
+		| EXISTS_FUTURE '(' stmt ')'       {
+		                                     Formula *true_formula =
+		                                       formula_new_value (CTL_TYPE_BOOLEAN_LITERAL, TRUE);
+
+		                                     Formula *stmt_formula =
+		                                       formula_new_composite (CTL_TYPE_EXIST_UNTIL, "EU", true_formula, $3, NULL);
+
+		                                     $$ = stmt_formula;
+		                                   }
+		| ALWAYS_NEXT '(' stmt ')'         {
+		                                     // AX == not EX (not stmt)
+
+		                                     Formula *not_stmt_formula =
+		                                       formula_new_composite (CTL_TYPE_NEGATION, "negation", $3, NULL);
+
+		                                     Formula *exists_next_formula =
+		                                       formula_new_composite (CTL_TYPE_EXIST_NEXT, "EX", not_stmt_formula, NULL);
+
+		                                     Formula *stmt_formula =
+		                                       formula_new_composite (CTL_TYPE_NEGATION, "negation", exists_next_formula, NULL);
+
+		                                     $$ = stmt_formula;
+		                                   }
 		| ALWAYS_GLOBALLY '(' stmt ')'     {
 		                                     // AG == not E (true U (not stmt))
 
@@ -111,6 +137,35 @@ stmt:   atom                               {
 		                                   }
 		| EXISTS stmt UNTIL stmt           {
 		                                     $$ = formula_new_composite (CTL_TYPE_EXIST_UNTIL, "EU", $2, $4, NULL);
+		                                   }
+		| ALWAYS stmt UNTIL stmt           {
+		                                     // A stmt U stmt = not E[(not stmt2) U (not stmt1 and not stmt2))] and not EG(not stmt2)
+
+		                                     Formula * not_stmt1 =
+		                                        formula_new_composite (CTL_TYPE_NEGATION, "negation", $2, NULL);
+
+		                                     Formula * not_stmt2 =
+		                                        formula_new_composite (CTL_TYPE_NEGATION, "negation", $4, NULL);
+
+		                                     Formula * and_formula =
+		                                       formula_new_composite (CTL_TYPE_CONJUNCTION, "and", not_stmt1, not_stmt1, NULL);
+
+		                                     Formula * eu_formula =
+		                                       formula_new_composite (CTL_TYPE_EXIST_UNTIL, "EU", not_stmt2, and_formula, NULL);
+
+		                                     Formula * eg_formula =
+		                                       formula_new_composite (CTL_TYPE_EXISTS_GLOBALLY, "EG", not_stmt2, NULL);
+
+		                                     Formula * not_eu_formula =
+		                                       formula_new_composite (CTL_TYPE_NEGATION, "negation", eu_formula, NULL);
+
+		                                     Formula * not_eg_formula =
+		                                       formula_new_composite (CTL_TYPE_NEGATION, "negation", eg_formula, NULL);
+
+		                                     Formula * stmt_formula =
+		                                       formula_new_composite (CTL_TYPE_CONJUNCTION, "and", not_eu_formula, not_eg_formula, NULL);
+
+		                                     $$ = stmt_formula;
 		                                   }
 		| stmt AND stmt                    {
 		                                     $$ = formula_new_composite(CTL_TYPE_CONJUNCTION, "and", $1, $3, NULL);

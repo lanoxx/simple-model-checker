@@ -19,16 +19,19 @@ int yyerror(char *s);
 
 boolean		true|TRUE|false|FALSE
 
-atom		[a-z]
+atom		[a-z]+
 
 negation	NOT|not
 and			AND|and
 
 exists_next		EX
 exists_globally	EG
+exists_future	EF
+always_next		AX
 always_globally	AG
 always_future	AF
 exists			E
+always			A
 until			U
 
 opening_parenthesis		\(
@@ -39,9 +42,12 @@ closing_parenthesis		\)
 {boolean}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return BOOLEAN_LITERAL; }
 {exists_next}			{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS_NEXT; }
 {exists_globally}		{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS_GLOBALLY; }
+{exists_future}			{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS_FUTURE; }
+{always_next}			{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ALWAYS_NEXT; }
 {always_globally}		{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ALWAYS_GLOBALLY; }
 {always_future}			{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ALWAYS_FUTURE; }
 {exists}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS; }
+{always}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ALWAYS; }
 {until}					{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return UNTIL; }
 {negation}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return NOT; }
 {and}					{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return AND; }
