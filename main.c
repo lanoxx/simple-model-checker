@@ -38,19 +38,19 @@ int main ()
   label_s0_a.atom = strdup ("a");
 
   label_s0_b.state = &state_0;
-  label_s0_b.atom = strdup("b");
+  label_s0_b.atom = strdup("bar");
 
   label_s1_a.state = &state_1;
   label_s1_a.atom = strdup("a");
 
   label_s2_b.state = &state_2;
-  label_s2_b.atom = strdup("b");
+  label_s2_b.atom = strdup("bar");
 
   label_s3_a.state = &state_3;
   label_s3_a.atom = strdup("a");
 
   label_s3_b.state = &state_3;
-  label_s3_b.atom = strdup("b");
+  label_s3_b.atom = strdup("bar");
 
   labels = g_list_append (labels, &label_s0_a);
   labels = g_list_append (labels, &label_s0_b);
@@ -93,39 +93,39 @@ int main ()
   kripke.initialState = &state_0;
   kripke.labels = labels;
 
-  printf ("[CTL-PARSER]Result states EX(b):\n");
-  GList *result_states_EX = model_check_from_string (&kripke, "EX(b)");
+  printf ("[CTL-PARSER]Result states EX(bar):\n");
+  GList *result_states_EX = model_check_from_string (&kripke, "EX(bar)");
   print_states (result_states_EX);
   printf("\n");
 
-  printf ("[CTL-PARSER]Result states EG(b):\n");
-  GList *result_states_EG = model_check_from_string (&kripke, "EG(b)");
+  printf ("[CTL-PARSER]Result states EG(bar):\n");
+  GList *result_states_EG = model_check_from_string (&kripke, "EG(bar)");
   print_states (result_states_EG);
   printf("\n");
 
-  printf ("[CTL-PARSER]Result states (a U b)\n");
-  GList *result_states_a_U_b = model_check_from_string (&kripke, "E a U b");
+  printf ("[CTL-PARSER]Result states (a U bar)\n");
+  GList *result_states_a_U_b = model_check_from_string (&kripke, "E a U bar");
   print_states (result_states_a_U_b);
   printf("\n");
 
-  printf ("[CTL-PARSER] Result states (b U a)\n");
-  GList *result_states_b_U_a = model_check_from_string (&kripke, "E b U a");
+  printf ("[CTL-PARSER] Result states (bar U a)\n");
+  GList *result_states_b_U_a = model_check_from_string (&kripke, "E bar U a");
   print_states (result_states_b_U_a);
   printf ("\n");
 
-  printf ("[CTL-PARSER] Result states 'not b'\n");
-  GList *parsed_result_states_not_b = model_check_from_string (&kripke, "not b");
+  printf ("[CTL-PARSER] Result states 'not bar'\n");
+  GList *parsed_result_states_not_b = model_check_from_string (&kripke, "not bar");
   print_states (parsed_result_states_not_b);
 
   printf ("\n");
 
-  printf ("[CTL-PARSER] Result states AF(b)\n");
-  GList *result_states_AF_b = model_check_from_string (&kripke, "AF(b)");
+  printf ("[CTL-PARSER] Result states AF(bar)\n");
+  GList *result_states_AF_b = model_check_from_string (&kripke, "AF(bar)");
   print_states (result_states_AF_b);
   printf("\n");
 
-  printf("[CTL-PARSER] Result states 'AG(b)'\n");
-  GList *parsed_result_states_ag_b = model_check_from_string (&kripke, "AG(b)");
+  printf("[CTL-PARSER] Result states 'AG(bar)'\n");
+  GList *parsed_result_states_ag_b = model_check_from_string (&kripke, "AG(bar)");
   print_states (parsed_result_states_ag_b);
   printf("\n");
 
