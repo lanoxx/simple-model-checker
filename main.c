@@ -11,9 +11,6 @@
 
 #include <model-checking/model-checker.h>
 
-void
-print_states (GList *states);
-
 int main ()
 {
   State state_0, state_1, state_2, state_3;
@@ -95,54 +92,39 @@ int main ()
 
   printf ("[CTL-PARSER]Result states EX(bar):\n");
   GList *result_states_EX = model_check_from_string (&kripke, "EX(bar)");
-  print_states (result_states_EX);
+  kripke_print_states (result_states_EX);
   printf("\n");
 
   printf ("[CTL-PARSER]Result states EG(bar):\n");
   GList *result_states_EG = model_check_from_string (&kripke, "EG(bar)");
-  print_states (result_states_EG);
+  kripke_print_states (result_states_EG);
   printf("\n");
 
   printf ("[CTL-PARSER]Result states (a U bar)\n");
   GList *result_states_a_U_b = model_check_from_string (&kripke, "E a U bar");
-  print_states (result_states_a_U_b);
+  kripke_print_states (result_states_a_U_b);
   printf("\n");
 
   printf ("[CTL-PARSER] Result states (bar U a)\n");
   GList *result_states_b_U_a = model_check_from_string (&kripke, "E bar U a");
-  print_states (result_states_b_U_a);
+  kripke_print_states (result_states_b_U_a);
   printf ("\n");
 
   printf ("[CTL-PARSER] Result states 'not bar'\n");
   GList *parsed_result_states_not_b = model_check_from_string (&kripke, "not bar");
-  print_states (parsed_result_states_not_b);
+  kripke_print_states (parsed_result_states_not_b);
 
   printf ("\n");
 
   printf ("[CTL-PARSER] Result states AF(bar)\n");
   GList *result_states_AF_b = model_check_from_string (&kripke, "AF(bar)");
-  print_states (result_states_AF_b);
+  kripke_print_states (result_states_AF_b);
   printf("\n");
 
   printf("[CTL-PARSER] Result states 'AG(bar)'\n");
   GList *parsed_result_states_ag_b = model_check_from_string (&kripke, "AG(bar)");
-  print_states (parsed_result_states_ag_b);
+  kripke_print_states (parsed_result_states_ag_b);
   printf("\n");
 
   return EXIT_SUCCESS;
-}
-
-
-
-void print_states (GList *states)
-{
-  GList *state_item = states;
-
-  while (state_item) {
-    State *result_state = state_item->data;
-
-    printf ("state: %s\n", result_state->name);
-
-    state_item = g_list_next (state_item);
-  }
 }
