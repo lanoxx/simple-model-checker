@@ -88,5 +88,15 @@ int main (int argc, char *argv[])
   kripke_print_states (parsed_result_states_ag_b);
   printf("\n");
 
+  printf("[CTL-PARSER] Result states 'EF(not bar)'\n");
+  GList *parsed_result_states_af_not_b = model_check_from_string (kripke, "EF(not bar)");
+  kripke_print_states (parsed_result_states_af_not_b);
+  printf("\n");
+
+  printf("[CTL-PARSER] Result states 'AF(not bar)'\n");
+  GList *parsed_result_states_ef_not_b = model_check_from_string (kripke, "AF(not bar)");
+  kripke_print_states (parsed_result_states_ef_not_b);
+  printf("\n");
+
   return EXIT_SUCCESS;
 }
