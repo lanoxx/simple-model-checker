@@ -50,7 +50,6 @@ main (int argc, char *argv[])
   setlocale (LC_ALL, "");
 
   g_test_init (&argc, &argv, NULL);
-  g_test_bug_base ("http://bugzilla.gnome.org/show_bug.cgi?id=");
 
   g_test_add ("/ctl-parser/parse_AF(a)", CtlParserFixture, "",
               my_object_fixture_set_up, test_parse_always_future_a,
