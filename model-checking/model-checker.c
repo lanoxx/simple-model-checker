@@ -311,9 +311,11 @@ resultStateWithoutSuccessor (GList *result_states, GList *relations)
 
     State *state_a = state_a_item->data;
 
+    gboolean has_successor = FALSE;
+
     GList *result_state_b_item = result_states;
 
-    while (result_state_b_item) {
+    while (result_state_b_item && !has_successor) {
 
       State *state_b = result_state_b_item->data;
 
@@ -324,13 +326,18 @@ resultStateWithoutSuccessor (GList *result_states, GList *relations)
         Relation *relation = relation_item->data;
 
         if (relation->state1 == state_a && relation->state2 == state_b) {
-          return state_a;
+          has_successor = TRUE;
+          break;
         }
 
         relation_item = g_list_next (relation_item);
       }
 
       result_state_b_item = g_list_next (result_state_b_item);
+    }
+
+    if (!has_successor) {
+      return state_a;
     }
 
     state_a_item = g_list_next (state_a_item);
