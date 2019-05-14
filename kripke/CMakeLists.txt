@@ -11,3 +11,5 @@ target_include_directories(kripke
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
 target_link_libraries(kripke PRIVATE ${GLIB_LIBRARIES} ${JSONGLIB_LIBRARIES})
+
+add_subdirectory(test)
