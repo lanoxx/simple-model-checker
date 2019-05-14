@@ -33,6 +33,18 @@ KripkeStructure * kripke_structure_new (GList * states,
                                         GList *relations,
                                         GList *labels);
 
+KripkeStructure * kripke_structure_new_from_string (const char  *input,
+                                                    GError     **error);
+
+void kripke_print (KripkeStructure *kripke);
+
+void kripke_free (KripkeStructure *kripke);
+void kripke_state_free  (State *state);
+void kripke_label_free  (Label *label);
+void kripke_relation_free (Relation *relation);
+void kripke_states_free (GList *list);
+void kripke_labels_free (GList *list);
+
 void kripke_print_states (GList *states);
 
 #endif /* KRIPKE_H */

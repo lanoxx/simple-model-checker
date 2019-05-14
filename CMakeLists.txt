@@ -9,6 +9,7 @@ find_package(BISON)
 enable_testing()
 
 pkg_check_modules (GLIB REQUIRED glib-2.0)
+pkg_check_modules (JSONGLIB REQUIRED json-glib-1.0)
 
 add_subdirectory(ctl-parser)
 add_subdirectory(kripke)
