@@ -37,7 +37,16 @@ The parser can be used via the following API:
 ## Kripke Structures
 
 Kripke structures are implemented as a static library and must also
-be linked into the target program.
+be linked into the target program. The Kripke library provides a
+constructor function which can deserialize a KripkeStructure from
+a JSON encoded string (see below). The JSON must have the following
+format:
+
+    {
+      "states": [ { "name": "<state name>", "labels": [ "<atom>", ... ] ],
+      "initialStates": "<state name>",
+      "relations:" [ [ "<state name 1>", "<state name 2>"], ... ]
+    }
 
 Kripke structures can be used via the following API:
 
@@ -46,6 +55,10 @@ Kripke structures can be used via the following API:
     KripkeStructure kripke;
 
     void kripke_print_states (GList *states);
+
+    // parse a KripkeStructure from a JSON encoded string
+    KripkeStructure * kripke_structure_new_from_string (const char  *input,
+                                                        GError     **error);
 
 ## Model Checker
 
@@ -81,4 +94,4 @@ The model checker can be used via the following API:
 ## Run
 
     cd build
-    ./model_checking
+    ./model_checking <some_json_file>.json
