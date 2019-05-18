@@ -33,6 +33,9 @@ KripkeStructure * kripke_structure_new (GList * states,
                                         GList *relations,
                                         GList *labels);
 
+KripkeStructure * kripke_structure_new_from_file (const char *filename,
+                                                  GError    **error);
+
 KripkeStructure * kripke_structure_new_from_string (const char  *input,
                                                     GError     **error);
 

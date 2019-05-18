@@ -15,6 +15,13 @@ add_states_and_labels_from_json_node (KripkeStructure *kripke,
 static gboolean add_relations_from_json_node (KripkeStructure *kripke,
                                               JsonArray       *relations_array);
 
+#define KRIPKE_LOAD_ERROR_QUARK kripke_load_error_quark ()
+
+GQuark kripke_load_error_quark ()
+{
+  return g_quark_from_static_string ("kripke-load-error_quark");
+}
+
 static State *
 find_state_by_name (KripkeStructure *kripke, const char *name);
 
@@ -29,6 +36,51 @@ KripkeStructure * kripke_structure_new (GList * states,
   kripke->relations = relations;
   kripke->initialState = initial_state;
   kripke->labels = labels;
+
+  return kripke;
+}
+
+KripkeStructure * kripke_structure_new_from_file (const char *filename,
+                                                  GError **error)
+{
+  if (filename == NULL || strlen (filename) == 0)
+  {
+    *error = g_error_new (KRIPKE_LOAD_ERROR_QUARK, 3,
+                          "Input file name for kripke structure must not be empty or NULL.\n");
+
+    return NULL;
+  }
+
+  GError *load_error = NULL;
+
+  GFile *input_file = g_file_new_for_path (filename);
+
+  if (! g_file_query_exists (input_file, NULL))
+  {
+    *error = g_error_new (KRIPKE_LOAD_ERROR_QUARK, 1,
+                          "File does not exist: %s.\n", filename);
+
+    return NULL;
+  }
+
+  char *content = NULL;
+
+  gboolean loaded = g_file_load_contents (input_file, NULL, &content, NULL, NULL,
+                                          &load_error);
+
+  g_clear_object (&input_file);
+
+  if (!loaded)
+  {
+    *error = g_error_new (KRIPKE_LOAD_ERROR_QUARK, 2,
+                          "Unable to load file contents: %s.\n", filename);
+
+    return NULL;
+  }
+
+  KripkeStructure *kripke = kripke_structure_new_from_string (content, error);
+
+  g_free (content);
 
   return kripke;
 }
