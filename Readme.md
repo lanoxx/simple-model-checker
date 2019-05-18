@@ -94,4 +94,8 @@ The model checker can be used via the following API:
 ## Run
 
     cd build
-    ./model_checking <some_json_file>.json
+    ./model_checking --kripke-file=<some_json_file>.json --formula=<ctl-star-formula>
+
+## Example
+
+    ./model_checking --kripke-file=kripke.json --formula="AG(not a)"

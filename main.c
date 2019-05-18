@@ -12,37 +12,24 @@
 
 #include <model-checking/model-checker.h>
 
+#include "options.h"
+
 int main (int argc, char *argv[])
 {
   KripkeStructure *kripke;
   GError *error = NULL;
 
-  const char* input_filename = NULL;
+  Options *options = options_parse_args (argc, argv);
 
-  if (argc > 1)
-  {
-    input_filename = argv[1];
-
-    printf ("input file name: %s\n", input_filename);
-  }
-
-  char *content = NULL;
-
-  gboolean loaded = FALSE;
-
-  if (input_filename != NULL)
-  {
-    GError *load_error = NULL;
-
-    GFile *input_file = g_file_new_for_path (input_filename);
-
-    loaded = g_file_load_contents (input_file, NULL, &content, NULL, NULL,
-                                   &load_error);
-  }
+  kripke = kripke_structure_new_from_file (options->input_filename, &error);
 
   // fallback to hard-coded kripke json if no arguments were passed.
-  if (!loaded)
+  if (error)
   {
+    char *content = NULL;
+
+    g_clear_object (&error);
+
     content = "{\n"
               "  \"states\": [\n"
               "    { \"name\": \"s0\", \"labels\": [ \"a\", \"bar\" ] },\n"
@@ -53,9 +40,9 @@ int main (int argc, char *argv[])
               "  \"initialStates\": [ \"s0\" ],\n"
               "  \"relations\": [ [ \"s0\", \"s1\" ], [ \"s1\", \"s2\" ], [ \"s1\", \"s0\" ], [ \"s2\", \"s3\" ], [ \"s2\", \"s0\" ], [ \"s3\", \"s3\" ] ]\n"
               "}";
-  }
 
-  kripke = kripke_structure_new_from_string (content, &error);
+    kripke = kripke_structure_new_from_string (content, &error);
+  }
 
   printf ("Checking the following Kripke structure:\n");
   kripke_print (kripke);
@@ -115,6 +102,19 @@ int main (int argc, char *argv[])
   g_list_free (parsed_result_states_ef_not_b);
   printf("\n");
 
+  if (!options->formula)
+  {
+    goto end;
+  }
+
+  printf ("CTL-PARSER] Result states '%s'\n", options->formula);
+  GList *parsed_result_states_formula = model_check_from_string (kripke, options->formula);
+  kripke_print_states (parsed_result_states_formula);
+  g_list_free (parsed_result_states_formula);
+  printf("\n");
+
+  end:
+  options_free (options);
   kripke_free (kripke);
 
   return EXIT_SUCCESS;

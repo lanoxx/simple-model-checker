@@ -17,7 +17,14 @@ add_subdirectory(model-checking)
 
 add_executable(model_checking "")
 
-target_sources(model_checking PRIVATE main.c)
+target_sources(model_checking PRIVATE
+        options.c
+        options.h
+        main.c)
 
-target_include_directories(model_checking PRIVATE ${GLIB_INCLUDE_DIRS} ctl-parser kripke model-checking)
+target_include_directories(model_checking PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${GLIB_INCLUDE_DIRS} ctl-parser kripke model-checking)
 target_link_libraries(model_checking ${GLIB_LIBRARIES} ctl-parser kripke model-checking)
+
+set (BINARY_NAME model-checking)
+
+configure_file(config.h.in config.h)
