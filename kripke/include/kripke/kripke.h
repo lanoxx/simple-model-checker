@@ -44,6 +44,7 @@ void kripke_label_free  (Label *label);
 void kripke_relation_free (Relation *relation);
 void kripke_states_free (GList *list);
 void kripke_labels_free (GList *list);
+void kripke_relations_free (GList *list);
 
 void kripke_print_states (GList *states);
 

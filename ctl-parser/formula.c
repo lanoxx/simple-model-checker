@@ -55,7 +55,7 @@ formula_new_name (enum FormulaType type, char* name)
 {
   Formula *formula = formula_new();
   formula->type = type;
-  formula->name = name;
+  formula->name = strdup(name);
 
   return formula;
 }

@@ -53,7 +53,7 @@ GList *model_check (KripkeStructure *kripkeStructure, Formula *formula)
 }
 
 GList *model_check_from_string (KripkeStructure *kripkeStructure,
-                                char *formula)
+                                const char *formula)
 {
   Formula *ctl_formula = parse_ctl_formula (formula, FALSE);
 
@@ -236,6 +236,8 @@ getStatesExistsNext (KripkeStructure *kripke, Formula *formula)
     state_item = g_list_next (state_item);
   }
 
+  g_list_free (subformula_states);
+
   return result_states;
 }
 
@@ -298,6 +300,8 @@ getStatesExistsUntil (KripkeStructure *kripke, Formula *formula)
 
   g_list_free (states_left);
   g_list_free (states_right);
+
+  g_list_free (prev_result_states);
 
   return result_states;
 }
@@ -370,6 +374,10 @@ getStatesExistsGlobally (KripkeStructure *kripke, Formula *formula)
 
     lists_match = lists_compare (result_states, prev_result_states);
   }
+
+  g_list_free (subformula_states);
+
+  g_list_free (prev_result_states);
 
   return result_states;
 }

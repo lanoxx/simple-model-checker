@@ -64,48 +64,58 @@ int main (int argc, char *argv[])
   printf ("[CTL-PARSER]Result states EX(bar):\n");
   GList *result_states_EX = model_check_from_string (kripke, "EX(bar)");
   kripke_print_states (result_states_EX);
+  g_list_free (result_states_EX);
   printf("\n");
 
   printf ("[CTL-PARSER]Result states EG(bar):\n");
   GList *result_states_EG = model_check_from_string (kripke, "EG(bar)");
   kripke_print_states (result_states_EG);
+  g_list_free (result_states_EG);
   printf("\n");
 
   printf ("[CTL-PARSER]Result states (a U bar)\n");
   GList *result_states_a_U_b = model_check_from_string (kripke, "E a U bar");
   kripke_print_states (result_states_a_U_b);
+  g_list_free (result_states_a_U_b);
   printf("\n");
 
   printf ("[CTL-PARSER] Result states (bar U a)\n");
   GList *result_states_b_U_a = model_check_from_string (kripke, "E bar U a");
   kripke_print_states (result_states_b_U_a);
+  g_list_free (result_states_b_U_a);
   printf ("\n");
 
   printf ("[CTL-PARSER] Result states 'not bar'\n");
   GList *parsed_result_states_not_b = model_check_from_string (kripke, "not bar");
   kripke_print_states (parsed_result_states_not_b);
-
+  g_list_free (parsed_result_states_not_b);
   printf ("\n");
 
   printf ("[CTL-PARSER] Result states AF(bar)\n");
   GList *result_states_AF_b = model_check_from_string (kripke, "AF(bar)");
   kripke_print_states (result_states_AF_b);
+  g_list_free (result_states_AF_b);
   printf("\n");
 
   printf("[CTL-PARSER] Result states 'AG(bar)'\n");
   GList *parsed_result_states_ag_b = model_check_from_string (kripke, "AG(bar)");
   kripke_print_states (parsed_result_states_ag_b);
+  g_list_free (parsed_result_states_ag_b);
   printf("\n");
 
   printf("[CTL-PARSER] Result states 'EF(not bar)'\n");
   GList *parsed_result_states_af_not_b = model_check_from_string (kripke, "EF(not bar)");
   kripke_print_states (parsed_result_states_af_not_b);
+  g_list_free (parsed_result_states_af_not_b);
   printf("\n");
 
   printf("[CTL-PARSER] Result states 'AF(not bar)'\n");
   GList *parsed_result_states_ef_not_b = model_check_from_string (kripke, "AF(not bar)");
   kripke_print_states (parsed_result_states_ef_not_b);
+  g_list_free (parsed_result_states_ef_not_b);
   printf("\n");
+
+  kripke_free (kripke);
 
   return EXIT_SUCCESS;
 }

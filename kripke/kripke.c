@@ -99,6 +99,8 @@ KripkeStructure * kripke_structure_new_from_string (const char  *input,
     goto error;
   }
 
+  json_node_free (node);
+
   return kripke;
 
   error:
@@ -226,6 +228,8 @@ add_states_and_labels_from_json_node (KripkeStructure *kripke,
   kripke->states = result_states;
   kripke->labels = result_labels;
 
+  g_list_free (state_node_items);
+
   return TRUE;
 
   error:
@@ -269,6 +273,8 @@ get_labels_for_state (State *state, JsonObject *state_object)
 
     label_item = label_item->next;
   }
+
+  g_list_free (label_items);
 
   return result_labels;
 
@@ -340,6 +346,8 @@ static gboolean add_relations_from_json_node (KripkeStructure *kripke,
 
   kripke->relations = result_relations;
 
+  g_list_free (relation_array_items);
+
   return TRUE;
 
   error:
@@ -379,7 +387,9 @@ void kripke_free (KripkeStructure *kripke)
 {
   kripke_labels_free (kripke->labels);
   kripke_states_free (kripke->states);
-  //TODO: free inital states and relations
+  kripke_relations_free (kripke->relations);
+
+  g_free (kripke);
 }
 
 void kripke_state_free  (State *state)
@@ -412,4 +422,9 @@ void kripke_states_free (GList *list)
 void kripke_labels_free (GList *list)
 {
   g_list_free_full (list, (GDestroyNotify) kripke_label_free);
+}
+
+void kripke_relations_free (GList *list)
+{
+  g_list_free_full (list, (GDestroyNotify) kripke_relation_free);
 }

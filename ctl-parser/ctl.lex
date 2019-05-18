@@ -39,19 +39,19 @@ closing_parenthesis		\)
 
 %%
 
-{boolean}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return BOOLEAN_LITERAL; }
-{exists_next}			{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS_NEXT; }
-{exists_globally}		{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS_GLOBALLY; }
-{exists_future}			{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS_FUTURE; }
-{always_next}			{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ALWAYS_NEXT; }
-{always_globally}		{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ALWAYS_GLOBALLY; }
-{always_future}			{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ALWAYS_FUTURE; }
-{exists}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return EXISTS; }
-{always}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ALWAYS; }
-{until}					{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return UNTIL; }
-{negation}				{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return NOT; }
-{and}					{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return AND; }
-{atom}					{ char*token = malloc(strlen(yytext)+1); strcpy(token,yytext); yylval.atom_name = token; return ATOMIC_PROPOSITION; }
+{boolean}				{ yylval.atom_name = yytext; return BOOLEAN_LITERAL; }
+{exists_next}			{ yylval.atom_name = yytext; return EXISTS_NEXT; }
+{exists_globally}		{ yylval.atom_name = yytext; return EXISTS_GLOBALLY; }
+{exists_future}			{ yylval.atom_name = yytext; return EXISTS_FUTURE; }
+{always_next}			{ yylval.atom_name = yytext; return ALWAYS_NEXT; }
+{always_globally}		{ yylval.atom_name = yytext; return ALWAYS_GLOBALLY; }
+{always_future}			{ yylval.atom_name = yytext; return ALWAYS_FUTURE; }
+{exists}				{ yylval.atom_name = yytext; return EXISTS; }
+{always}				{ yylval.atom_name = yytext; return ALWAYS; }
+{until}					{ yylval.atom_name = yytext; return UNTIL; }
+{negation}				{ yylval.atom_name = yytext; return NOT; }
+{and}					{ yylval.atom_name = yytext; return AND; }
+{atom}					{ yylval.atom_name = yytext; return ATOMIC_PROPOSITION; }
 {opening_parenthesis}	{ return '('; }
 {closing_parenthesis}	{ return ')'; }
 

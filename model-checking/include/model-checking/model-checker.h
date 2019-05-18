@@ -47,6 +47,6 @@ GList *model_check (KripkeStructure *kripkeStructure,
  * @return A list of states (GList<State> *). Must be freed when no longer needed.
  */
 GList *model_check_from_string (KripkeStructure *kripkeStructure,
-                                char *formula);
+                                const char *formula);
 
 #endif /* MODEL_CHECKER_H */

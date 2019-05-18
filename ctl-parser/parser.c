@@ -29,7 +29,7 @@ char *global_lexer_input;
 int yydebug = 0;
 
 Formula *
-parse_ctl_formula (char *input, int debug)
+parse_ctl_formula (const char *input, int debug)
 {
   yydebug = debug;
 
