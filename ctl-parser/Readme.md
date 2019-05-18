@@ -13,7 +13,7 @@ grammar:
  * Exists next (`EX(<statement>)`) is a statement.
  * Exists globally (`EG(<statement>)`) is a statement.
  * Exists future (`EF(<statement>`) is a statement.
- * Exists until (`E <statement> U <statement>``) is a statement.
+ * Exists until (`E <statement> U <statement>`) is a statement.
  * Always next (`AX (<statement>)`) is a statement.
  * Always globally (`AG (<statement>)`) is a statement.
  * Always future (`AF (<statement>)`) is a statement.
