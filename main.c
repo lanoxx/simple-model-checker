@@ -13,6 +13,7 @@
 #include <model-checking/model-checker.h>
 
 #include "options.h"
+#include "shell.h"
 
 int main (int argc, char *argv[])
 {
@@ -112,6 +113,8 @@ int main (int argc, char *argv[])
   kripke_print_states (parsed_result_states_formula);
   g_list_free (parsed_result_states_formula);
   printf("\n");
+
+  shell_start ();
 
   end:
   options_free (options);
