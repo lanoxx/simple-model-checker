@@ -164,6 +164,8 @@ getStatesWithConjunction (KripkeStructure *kripke, Formula *formula)
 
     State *current_state = current_state_item->data;
 
+    current_state_item = g_list_next (current_state_item);
+
     GList *found = g_list_find (right_states, current_state);
 
     if (!found)
